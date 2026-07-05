@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Product Details - Flipkart</title>
+    <meta name="description" content="Buy product details at Flipkart. 99% OFF!">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            background-color: #f1f3f6;
+            color: #212121;
+            font-family: Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 60px;
+            /* space for fixed buttons */
+        }
+
+        .detail-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: #fff;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .detail-header .back-btn {
+            color: #000 !important;
+            font-size: 24px;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .product-image-section {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .product-main-img {
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-image-container-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 360px;
+            margin: 0 auto;
+        }
+
+        .slide-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            box-shadow: none;
+            font-size: 28px;
+            font-weight: bold;
+            color: #2874f0;
+            cursor: pointer;
+            z-index: 10;
+            user-select: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-arrow-left {
+            left: 15px;
+        }
+
+        .slide-arrow-right {
+            right: 15px;
+        }
+
+        .product-main-img img {
+            max-height: 280px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .image-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 15px;
+        }
+
+        .image-dots .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-dots .dot.active {
+            background: #2874f0;
+            width: 16px;
+            border-radius: 4px;
+        }
+
+        .color-section {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .color-section h4 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #878787;
+            margin: 0 0 12px 0;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .color-option {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+            cursor: pointer;
+            background: #fff;
+        }
+
+        .color-option.selected {
+            border-color: #2874f0;
+            box-shadow: 0 0 0 1px #2874f0;
+        }
+
+        .color-option img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            margin-bottom: 6px;
+        }
+
+        .color-name {
+            font-size: 11px;
+            color: #212121;
+            text-align: center;
+        }
+
+        .product-info-section {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .product-full-name {
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.4;
+            color: #212121;
+            margin: 0 0 8px 0;
+        }
+
+        .detail-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .rating-badge {
+            background: #388e3c;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .rating-count {
+            font-size: 12px;
+            color: #878787;
+        }
+
+        .price-section {
+            margin-top: 8px;
+        }
+
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .discount-pct {
+            font-size: 20px;
+            font-weight: 500;
+            color: #388e3c;
+        }
+
+        .original-prc {
+            font-size: 14px;
+            color: #878787;
+            text-decoration: line-through;
+        }
+
+        .sale-prc {
+            font-size: 20px;
+            font-weight: 500;
+            color: #212121;
+        }
+
+        .packaging-info {
+            font-size: 12px;
+            color: #212121;
+            margin-top: 6px;
+        }
+
+        .delivery-info {
+            font-size: 12px;
+            color: #212121;
+            margin-top: 4px;
+        }
+
+        .card-container {
+            background: #fff;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .delivery-card {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .delivery-card img {
+            width: 40px;
+            height: auto;
+        }
+
+        .delivery-details p {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .delivery-details .title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .delivery-details .date {
+            font-weight: 500;
+            color: #212121;
+        }
+
+        .delivery-details .timer {
+            color: #c60055;
+            font-size: 12px;
+        }
+
+        .wow-deal-card {
+            padding: 12px 15px;
+            background: #fff;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .wow-deal-card img {
+            width: 64px;
+            height: auto;
+        }
+
+        .wow-deal-info {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .wow-title {
+            font-size: 15px;
+            color: #212121;
+        }
+
+        .wow-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #388e3c;
+        }
+
+        .wow-sub {
+            font-size: 11px;
+            color: #878787;
+            width: 100%;
+            margin-top: 2px;
+        }
+
+        .similar-products-section {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .similar-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #212121;
+            margin: 0 0 12px 0;
+        }
+
+        .similar-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding-bottom: 4px;
+        }
+
+        .similar-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px;
+            width: 130px;
+            flex-shrink: 0;
+            text-decoration: none;
+            background: #fff;
+        }
+
+        .similar-card img {
+            width: 100%;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 6px;
+        }
+
+        .similar-name {
+            font-size: 11px;
+            color: #212121;
+            line-height: 1.3;
+            height: 28px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            margin-bottom: 6px;
+        }
+
+        .similar-prices {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .similar-sell {
+            font-size: 12px;
+            font-weight: 500;
+            color: #212121;
+        }
+
+        .similar-mrp {
+            font-size: 10px;
+            color: #878787;
+            text-decoration: line-through;
+        }
+
+        .similar-disc {
+            font-size: 10px;
+            font-weight: 500;
+            color: #388e3c;
+        }
+
+        .similar-wow {
+            font-size: 10px;
+            color: #388e3c;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .seofooter {
+            background: #fff;
+            padding: 20px 15px 40px 15px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            font-size: 11px;
+            color: #555;
+            text-decoration: none;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 15px 0;
+        }
+
+        .footer-copy {
+            font-size: 11px;
+            color: #878787;
+            margin: 0;
+        }
+
+        .floating-btns {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            display: flex;
+            background: #fff;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .btn-add-cart {
+            flex: 1;
+            height: 100%;
+            border: none;
+            background: #fff;
+            color: #2874f0;
+            font-size: 15px;
+            font-weight: 500;
+            border-top: 1px solid #e0e0e0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn-buy {
+            flex: 1;
+            height: 100%;
+            border: none;
+            background: #ffc200;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            line-height: 50px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Detail Header -->
+    <div class="detail-header" style="justify-content: space-between;">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <a href="index.html" class="back-btn" style="margin-right:0;">←</a>
+            <img src="assets/images/header_circle_logo.png" alt="Flipkart" style="height:36px; width:36px; object-fit:contain;">
+        </div>
+        <div style="display:flex;align-items:center;gap:20px;">
+            <a href="#" style="text-decoration:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111112" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg></a>
+            <a href="#" style="text-decoration:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111112" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg></a>
+            <a href="#" style="text-decoration:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111112" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg></a>
+        </div>
+    </div>
+
+    <!-- Product Image Section -->
+    <div class="product-image-section" style="position:relative;">
+        <div style="position:absolute; top:4px; right:4px; display:flex; flex-direction:column; gap:16px; z-index:11;">
+            <div class="floating-wishlist-btn" onclick="toggleWishlist(this)" style="display:flex; align-items:center; justify-content:center; cursor:pointer; padding:4px; transition: transform 0.2s;">
+                <svg class="heart-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#717478" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="floating-share-btn" onclick="shareProduct()" style="display:flex; align-items:center; justify-content:center; cursor:pointer; padding:4px; transition: transform 0.2s;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#717478" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            </div>
+        </div>
+
+        <div class="product-image-container-wrapper">
+            <button class="slide-arrow slide-arrow-left" onclick="handlePrevClick()">&#10094;</button>
+            <div class="product-main-img" id="mainImageContainer">
+                <img src="" alt="" id="mainProductImage">
+            </div>
+            <button class="slide-arrow slide-arrow-right" onclick="handleNextClick()">&#10095;</button>
+        </div>
+
+        <div class="image-dots" id="imageDots"></div>
+    </div>
+
+    <!-- Color Selector -->
+    <div class="color-section" id="colorSection" style="display:none;">
+        <h4>Select Color</h4>
+        <div class="color-options" id="colorOptions"></div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info-section">
+        <h1 class="product-full-name" id="productFullName"></h1>
+
+        <div class="detail-rating">
+            <div class="rating-badge" id="ratingBadge"></div>
+            <span class="rating-count" id="ratingcount"></span>
+            <img src="assets/images/fa_62673a.png" style="height:20px;margin-left:auto" alt="Assured">
+        </div>
+
+        <!-- Price Section -->
+        <div class="price-section">
+            <div class="price-row">
+                <span>
+                    <svg width="20" height="20" viewBox="0 0 12 12" fill="none">
+                        <path d="M6.73461 1V8.46236L9.5535 5.63352L10.5876 6.65767L5.99384 11.2415L1.41003 6.65767L2.42424 5.63352L5.25307 8.46236V1H6.73461Z" fill="#008C00"></path>
+                    </svg>
+                </span>
+                <span class="discount-pct" id="discountPct"></span>
+                <span class="original-prc" id="originalPrc"></span>
+                <span class="sale-prc" id="salePrc"></span>
+            </div>
+            <div class="packaging-info">+ <del style="color:grey">₹99</del> Secured Packaging Free</div>
+            <div class="delivery-info">Free delivery by 2 day</div>
+        </div>
+    </div>
+
+    <!-- Express Delivery Card -->
+    <div class="card-container">
+        <div class="delivery-card">
+            <div><img src="assets/images/truck.webp" alt="Express Delivery"></div>
+            <div class="delivery-details">
+                <p class="title">
+                    <span style="font-size:16px;color:black;font-weight:800">Express</span>
+                    <span style="color:green;font-weight:bold;">Free</span>
+                    <del style="color:grey">₹40</del>
+                    Delivery in
+                </p>
+                <p>2 Days Delivery by <span id="delivery-date" class="date"></span></p>
+                <p class="timer">This offer will end in <span id="timer" style="font-weight:bold;">15m 00s</span></p>
+            </div>
+            <div style="margin-left:auto;">
+                <svg width="14" height="14" fill="none" viewBox="0 0 17 17">
+                    <path d="m6.627 3.749 5 5-5 5" stroke="#111112" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warranty & Badges Section -->
+    <div class="card-container" style="padding: 12px 15px; background: #fff;">
+        <img src="assets/images/year.webp" alt="1-Year Warranty" style="width:100%; display:block; border-radius:4px; margin-bottom:12px;">
+        <img src="assets/images/trust_badges.jpg" alt="Flipkart Trust Badges" style="width:100%; display:block;">
+    </div>
+
+    <!-- WOW Deal Card -->
+    <div class="wow-deal-card">
+        <img src="assets/images/wow_deal.png" alt="WOW Deal">
+        <div class="wow-deal-info">
+            <span class="wow-title">Get at</span>
+            <span class="wow-price" id="wowPrice"></span>
+            <div class="wow-sub">With UPI Payment & More</div>
+        </div>
+    </div>
+
+    <!-- Similar Products Section -->
+    <div class="similar-products-section">
+        <h3 class="similar-title">Similar Products</h3>
+        <div class="similar-scroll" id="similarScroll"></div>
+    </div>
+
+    <!-- Footer Links -->
+    <footer class="seofooter">
+        <div class="footer-links">
+            <a href="#" style="color:#2a55e5; font-size:13px; font-weight:bold; text-decoration:none;">Become a Seller</a>
+            <a href="#" style="color:#2a55e5; font-size:13px; font-weight:bold; text-decoration:none;">Advertise</a>
+            <a href="#" style="color:#2a55e5; font-size:13px; font-weight:bold; text-decoration:none;">Gift Cards</a>
+            <a href="#" style="color:#2a55e5; font-size:13px; font-weight:bold; text-decoration:none;">Help Center</a>
+        </div>
+        <div class="footer-divider"></div>
+        <p class="footer-copy" style="margin-bottom:12px; font-size:13px; color:#555;">© 2007–2025 <strong style="color:#2a55e5;">Flipkart.com</strong> — All Rights Reserved</p>
+        <img src="assets/images/payment_methods.svg" alt="Payment Methods" style="height:20px; display:block; margin:0 auto; max-width:90%;">
+    </footer>
+
+    <!-- Floating Buttons -->
+    <div class="floating-btns">
+        <a href="" class="btn-add-cart" id="addCartBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2874f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            Add to Cart
+        </a>
+        <a href="" class="btn-buy" id="buyNowBtn">Buy Now</a>
+    </div>
+
+    <!-- Load data -->
+    <script src="products.js"></script>
+    <script>
+        // Get query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        // Redirect to index if product ID is invalid or not found
+        if (!productId || !productsData[productId]) {
+            window.location.href = 'index.html';
+        }
+
+        const product = productsData[productId];
+
+        // Populate Page Metadata
+        document.title = product.title;
+        document.querySelector('meta[name="description"]').setAttribute('content', product.description);
+
+        // Populate Main Content
+        document.getElementById('productFullName').textContent = product.name;
+        document.getElementById('ratingBadge').textContent = product.rating_val;
+        document.getElementById('ratingcount').textContent = product.rating_count;
+        document.getElementById('discountPct').textContent = product.discount;
+        document.getElementById('originalPrc').textContent = product.original_price;
+        document.getElementById('salePrc').textContent = product.sale_price;
+        document.getElementById('wowPrice').textContent = product.wow_price;
+
+        let globalProductImages = product.images;
+        let activeImagesList = [...product.images];
+        let currentSlideIndex = 0;
+        let autoSlideInterval = null;
+
+        function showSlide(index) {
+            if (activeImagesList.length === 0) return;
+            if (index >= activeImagesList.length) {
+                currentSlideIndex = 0;
+            } else if (index < 0) {
+                currentSlideIndex = activeImagesList.length - 1;
+            } else {
+                currentSlideIndex = index;
+            }
+
+            const mainImg = document.getElementById('mainProductImage');
+            if (mainImg) {
+                mainImg.src = activeImagesList[currentSlideIndex];
+                mainImg.alt = product.name;
+            }
+
+            document.querySelectorAll('#imageDots .dot').forEach((dot, idx) => {
+                if (idx === currentSlideIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            showSlide(currentSlideIndex + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlideIndex - 1);
+        }
+
+        function startAutoSlide() {
+            stopAutoSlide();
+            autoSlideInterval = setInterval(nextSlide, 3000);
+        }
+
+        function stopAutoSlide() {
+            if (autoSlideInterval) {
+                clearInterval(autoSlideInterval);
+            }
+        }
+
+        function handleDotClick(idx) {
+            showSlide(idx);
+            startAutoSlide();
+        }
+
+        // Color selection
+        function selectColor(el) {
+            document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+            el.classList.add('selected');
+
+            const colorName = el.dataset.color;
+            let colorImages = [];
+            try {
+                colorImages = JSON.parse(el.dataset.images || '[]');
+            } catch (e) {
+                colorImages = [];
+            }
+
+            activeImagesList = colorImages.length > 0 ? colorImages : globalProductImages;
+            currentSlideIndex = 0;
+            showSlide(0);
+            startAutoSlide();
+
+            // Rebuild gallery dots dynamically based on selected color variant
+            const dotsContainer = document.getElementById('imageDots');
+            if (activeImagesList.length > 0) {
+                dotsContainer.innerHTML = '';
+                activeImagesList.forEach((imgUrl, i) => {
+                    const dot = document.createElement('span');
+                    dot.className = `dot ${i === 0 ? 'active' : ''}`;
+                    dot.dataset.index = i;
+                    dot.dataset.src = imgUrl;
+                    dot.addEventListener('click', function () {
+                        handleDotClick(i);
+                    });
+                    dotsContainer.appendChild(dot);
+                });
+            }
+
+            // Update product title dynamically on color switch
+            const baseName = product.name;
+            const nameEl = document.querySelector('.product-full-name');
+            if (nameEl) {
+                let displayName = baseName.replace(/\s*\([^)]*\)\s*$/, '');
+                nameEl.textContent = `${displayName} (${colorName})`;
+            }
+
+            // Update Buy Now links with selected color
+            const buyBtn = document.getElementById('buyNowBtn');
+            const addBtn = document.getElementById('addCartBtn');
+            const url = `address.html?id=${product.id}&color=${encodeURIComponent(colorName)}`;
+            buyBtn.href = url;
+            addBtn.href = url;
+        }
+
+        function toggleWishlist(el) {
+            const icon = el.querySelector('.heart-icon');
+            el.style.transform = 'scale(1.2)';
+            setTimeout(() => el.style.transform = 'scale(1)', 200);
+
+            if (icon.getAttribute('fill') === 'none') {
+                icon.setAttribute('fill', '#e53935');
+                icon.setAttribute('stroke', '#e53935');
+            } else {
+                icon.setAttribute('fill', 'none');
+                icon.setAttribute('stroke', '#717478');
+            }
+        }
+
+        function shareProduct() {
+            if (navigator.share) {
+                navigator.share({
+                    title: product.name,
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                const dummy = document.createElement('input');
+                document.body.appendChild(dummy);
+                dummy.value = window.location.href;
+                dummy.select();
+                document.execCommand('copy');
+                document.body.removeChild(dummy);
+                alert('Product link copied to clipboard!');
+            }
+        }
+
+        // Render similar products
+        function renderSimilarProducts() {
+            const similarScroll = document.getElementById('similarScroll');
+            similarScroll.innerHTML = '';
+            
+            const allIds = Object.keys(productsData).filter(id => id !== productId.toString());
+            // Pick 6 random similar products
+            const shuffled = allIds.sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 6);
+
+            selected.forEach(id => {
+                const p = productsData[id];
+                const card = document.createElement('a');
+                card.href = `product.html?id=${p.id}`;
+                card.className = 'similar-card';
+                card.innerHTML = `
+                    <img src="${p.images[0]}" alt="${p.name}">
+                    <span class="similar-name">${p.name}</span>
+                    <div class="similar-prices">
+                        <span class="similar-sell">${p.sale_price}</span>
+                        <span class="similar-mrp">${p.original_price}</span>
+                        <span class="similar-disc">${p.discount}</span>
+                    </div>
+                    <div class="similar-wow">WOW! ${p.wow_price}</div>
+                `;
+                similarScroll.appendChild(card);
+            });
+        }
+
+        function handlePrevClick() {
+            prevSlide();
+            startAutoSlide();
+        }
+
+        function handleNextClick() {
+            nextSlide();
+            startAutoSlide();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Track visitor
+            try {
+                const stats = JSON.parse(localStorage.getItem('admin_stats') || '{"home":0,"product":0,"address":0,"cart":0,"payment":0,"mobile":0,"desktop":0}');
+                stats.product++;
+                localStorage.setItem('admin_stats', JSON.stringify(stats));
+            } catch (e) {
+                console.error("Tracking error", e);
+            }
+
+            // Render Similar Products
+            renderSimilarProducts();
+
+            // Populate Color Options
+            if (product.colors && product.colors.length > 0) {
+                const colorSection = document.getElementById('colorSection');
+                colorSection.style.display = 'block';
+                const colorOptions = document.getElementById('colorOptions');
+                colorOptions.innerHTML = '';
+
+                product.colors.forEach((col, idx) => {
+                    const opt = document.createElement('div');
+                    opt.className = `color-option ${idx === 0 ? 'selected' : ''}`;
+                    opt.dataset.color = col.color;
+                    opt.dataset.image = col.image;
+                    opt.dataset.images = JSON.stringify(col.images);
+                    opt.onclick = function () { selectColor(this); };
+                    opt.innerHTML = `
+                        <img src="${col.image}" alt="${col.color}">
+                        <span class="color-name">${col.color}</span>
+                    `;
+                    colorOptions.appendChild(opt);
+                });
+
+                // Trigger initial color selection
+                const activeColorOpt = colorOptions.querySelector('.color-option.selected');
+                if (activeColorOpt) {
+                    selectColor(activeColorOpt);
+                }
+            } else {
+                // No colors: setup static dots & initial slide
+                const dotsContainer = document.getElementById('imageDots');
+                dotsContainer.innerHTML = '';
+                activeImagesList.forEach((imgUrl, i) => {
+                    const dot = document.createElement('span');
+                    dot.className = `dot ${i === 0 ? 'active' : ''}`;
+                    dot.dataset.index = i;
+                    dot.dataset.src = imgUrl;
+                    dot.addEventListener('click', function () {
+                        handleDotClick(i);
+                    });
+                    dotsContainer.appendChild(dot);
+                });
+
+                showSlide(0);
+                startAutoSlide();
+
+                // Setup Buy Now/Add Cart links without color parameter
+                const buyBtn = document.getElementById('buyNowBtn');
+                const addBtn = document.getElementById('addCartBtn');
+                const url = `address.html?id=${product.id}`;
+                buyBtn.href = url;
+                addBtn.href = url;
+            }
+
+            // Delivery Date Calculations (2 Days from now)
+            const deliveryDate = new Date();
+            deliveryDate.setDate(deliveryDate.getDate() + 2);
+            const options = { weekday: 'short', month: 'short', day: 'numeric' };
+            const formattedDate = deliveryDate.toLocaleDateString('en-US', options);
+            document.getElementById('delivery-date').innerText = formattedDate;
+
+            // Countdown Timer (15 Minutes)
+            let duration = 15 * 60;
+            const display = document.getElementById('timer');
+            let timer = duration, minutes, seconds;
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + "m " + seconds + "s";
+
+                if (--timer < 0) {
+                    timer = duration;
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

