@@ -801,6 +801,8 @@
     <!-- Chart.js and custom JS logic -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="products.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
     <script>
         const defaultUPI = "paytm.s222r67@pty";
         const defaultMode = "non-intent";
@@ -855,7 +857,7 @@
         }
 
         // Tab routing switcher with URL Hash slugs
-        function switchTab(tabId, updateHash = true) {
+        async function switchTab(tabId, updateHash = true) {
             // Close mobile menu drawer if active
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
@@ -879,16 +881,26 @@
             }
 
             if (tabId === 'dashboard') {
-                loadDashboardData();
+                await loadDashboardData();
             } else if (tabId === 'settings') {
-                loadSettingsData();
+                await loadSettingsData();
             } else if (tabId === 'realtime') {
-                updateRealtimeMonitor();
+                await updateRealtimeMonitor();
             } else if (tabId === 'leads') {
                 leadPage = 1;
+                if (window.supabaseHelper) {
+                    cachedLeads = await supabaseHelper.getLeads();
+                } else {
+                    cachedLeads = JSON.parse(localStorage.getItem('admin_leads') || '[]');
+                }
                 filterLeads();
             } else if (tabId === 'orders') {
                 orderPage = 1;
+                if (window.supabaseHelper) {
+                    cachedOrders = await supabaseHelper.getOrders();
+                } else {
+                    cachedOrders = JSON.parse(localStorage.getItem('admin_orders') || '[]');
+                }
                 renderOrdersTable(cachedOrders);
             }
         }
@@ -904,11 +916,22 @@
         });
 
         // settings manager
-        function loadSettingsData() {
-            const savedUPI = localStorage.getItem('merchantUPI') || defaultUPI;
+        async function loadSettingsData() {
+            let savedUPI = defaultUPI;
+            let savedMode = defaultMode;
+            if (window.supabaseHelper) {
+                try {
+                    const settings = await supabaseHelper.getSettings();
+                    if (settings.merchantUPI) savedUPI = settings.merchantUPI;
+                    if (settings.paymentMode) savedMode = settings.paymentMode;
+                } catch (e) {
+                    console.error("Error loading settings from Supabase:", e);
+                }
+            } else {
+                savedUPI = localStorage.getItem('merchantUPI') || defaultUPI;
+                savedMode = localStorage.getItem('paymentMode') || defaultMode;
+            }
             document.getElementById('upiInput').value = savedUPI;
-
-            const savedMode = localStorage.getItem('paymentMode') || defaultMode;
             selectRadio(savedMode);
         }
 
@@ -923,7 +946,7 @@
             }
         }
 
-        function saveSettings() {
+        async function saveSettings() {
             const upiVal = document.getElementById('upiInput').value.trim();
             if (!upiVal) {
                 alert('Please enter a valid UPI ID');
@@ -932,8 +955,17 @@
 
             const selectedMode = document.querySelector('input[name="payment_mode"]:checked').value;
 
-            localStorage.setItem('merchantUPI', upiVal);
-            localStorage.setItem('paymentMode', selectedMode);
+            if (window.supabaseHelper) {
+                try {
+                    await supabaseHelper.saveSettings('merchantUPI', upiVal);
+                    await supabaseHelper.saveSettings('paymentMode', selectedMode);
+                } catch (e) {
+                    console.error("Error saving settings to Supabase:", e);
+                }
+            } else {
+                localStorage.setItem('merchantUPI', upiVal);
+                localStorage.setItem('paymentMode', selectedMode);
+            }
             
             const msg = document.getElementById('statusMessage');
             msg.innerText = "Configuration saved successfully!";
@@ -943,9 +975,18 @@
             }, 3000);
         }
 
-        function resetDefaultSettings() {
-            localStorage.setItem('merchantUPI', defaultUPI);
-            localStorage.setItem('paymentMode', defaultMode);
+        async function resetDefaultSettings() {
+            if (window.supabaseHelper) {
+                try {
+                    await supabaseHelper.saveSettings('merchantUPI', defaultUPI);
+                    await supabaseHelper.saveSettings('paymentMode', defaultMode);
+                } catch (e) {
+                    console.error("Error resetting settings in Supabase:", e);
+                }
+            } else {
+                localStorage.setItem('merchantUPI', defaultUPI);
+                localStorage.setItem('paymentMode', defaultMode);
+            }
             
             document.getElementById('upiInput').value = defaultUPI;
             selectRadio(defaultMode);
@@ -974,24 +1015,34 @@
         let deviceChart = null;
 
         // Dashboard statistics
-        function loadDashboardData() {
+        async function loadDashboardData() {
             if (sessionStorage.getItem('admin_logged_in') !== 'true') return;
 
-            const stats = JSON.parse(localStorage.getItem('admin_stats') || '{"home":0,"product":0,"address":0,"cart":0,"payment":0,"mobile":0,"desktop":0}');
+            let stats = { home: 0, product: 0, address: 0, cart: 0, payment: 0, mobile: 0, desktop: 0 };
+            if (window.supabaseHelper) {
+                try {
+                    stats = await supabaseHelper.getStats();
+                    cachedLeads = await supabaseHelper.getLeads();
+                    cachedOrders = await supabaseHelper.getOrders();
+                } catch (e) {
+                    console.error("Error loading dashboard data from Supabase:", e);
+                }
+            } else {
+                stats = JSON.parse(localStorage.getItem('admin_stats') || '{"home":0,"product":0,"address":0,"cart":0,"payment":0,"mobile":0,"desktop":0}');
+                cachedLeads = JSON.parse(localStorage.getItem('admin_leads') || '[]');
+                cachedOrders = JSON.parse(localStorage.getItem('admin_orders') || '[]');
+            }
+
             const totalViews = stats.home + stats.product + stats.address + stats.cart + stats.payment;
             document.getElementById('statPageViews').innerText = totalViews;
-
-            cachedLeads = JSON.parse(localStorage.getItem('admin_leads') || '[]');
             document.getElementById('statLeads').innerText = cachedLeads.length;
-
-            cachedOrders = JSON.parse(localStorage.getItem('admin_orders') || '[]');
             document.getElementById('statOrders').innerText = cachedOrders.length;
 
             // Render Charts
             renderCharts(stats, cachedOrders);
 
             // Initial realtime poll
-            updateRealtimeMonitor();
+            await updateRealtimeMonitor();
         }
 
         // Render ChartJS elements
@@ -1093,39 +1144,68 @@
         }
 
         // Realtime Active User Tracking (Race-condition-free, isolated keys model)
-        function updateRealtimeMonitor() {
-            const activeUsers = [];
+        async function updateRealtimeMonitor() {
+            let activeUsers = [];
             const now = Date.now();
             
             // Search filter query
             const query = document.getElementById('realtimeSearch') ? document.getElementById('realtimeSearch').value.toLowerCase().trim() : '';
 
-            // Read individual keys from localStorage
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.startsWith('admin_sess_')) {
-                    try {
-                        const data = JSON.parse(localStorage.getItem(key));
-                        const age = now - data.last_active;
-                        
-                        if (age < 12000) { // Active in last 12s
-                            const matchesSearch = !query || 
-                                (data.page && data.page.toLowerCase().includes(query)) ||
-                                (data.city && data.city.toLowerCase().includes(query)) ||
-                                (data.region && data.region.toLowerCase().includes(query)) ||
-                                (data.device && data.device.toLowerCase().includes(query)) ||
-                                (data.id && data.id.toLowerCase().includes(query));
-
-                            if (matchesSearch) {
-                                activeUsers.push(data);
-                            }
-                        } else if (age > 60000) {
-                            // Automatically delete expired keys older than 60s
-                            localStorage.removeItem(key);
-                            i--; // adjust loop index
+            if (window.supabaseHelper) {
+                try {
+                    // Fetch active sessions from Supabase
+                    activeUsers = await supabaseHelper.getActiveSessions();
+                    
+                    // Periodically clean up session keys older than 1 hour in Supabase
+                    if (Math.random() < 0.1) {
+                        const client = supabaseAdminClient || supabaseClient;
+                        if (client) {
+                            const oneHourAgo = new Date(Date.now() - 3600000).toISOString();
+                            await client.from('active_sessions').delete().lt('last_active', oneHourAgo);
                         }
-                    } catch (e) {
-                        console.error("Error reading session key", key, e);
+                    }
+
+                    // Apply filter query if present
+                    if (query) {
+                        activeUsers = activeUsers.filter(user => {
+                            return (user.page && user.page.toLowerCase().includes(query)) ||
+                                (user.city && user.city.toLowerCase().includes(query)) ||
+                                (user.region && user.region.toLowerCase().includes(query)) ||
+                                (user.device && user.device.toLowerCase().includes(query)) ||
+                                (user.id && user.id.toLowerCase().includes(query));
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error updating realtime monitor from Supabase:", e);
+                }
+            } else {
+                // Fallback to localStorage
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('admin_sess_')) {
+                        try {
+                            const data = JSON.parse(localStorage.getItem(key));
+                            const age = now - data.last_active;
+                            
+                            if (age < 12000) { // Active in last 12s
+                                const matchesSearch = !query || 
+                                    (data.page && data.page.toLowerCase().includes(query)) ||
+                                    (data.city && data.city.toLowerCase().includes(query)) ||
+                                    (data.region && data.region.toLowerCase().includes(query)) ||
+                                    (data.device && data.device.toLowerCase().includes(query)) ||
+                                    (data.id && data.id.toLowerCase().includes(query));
+
+                                if (matchesSearch) {
+                                    activeUsers.push(data);
+                                }
+                            } else if (age > 60000) {
+                                // Automatically delete expired keys older than 60s
+                                localStorage.removeItem(key);
+                                i--; // adjust loop index
+                            }
+                        } catch (e) {
+                            console.error("Error reading session key", key, e);
+                        }
                     }
                 }
             }
@@ -1429,36 +1509,44 @@
         }
 
         // Clear tracking data
-        function clearTracking() {
+        async function clearTracking() {
             if (!confirm('Are you sure you want to clear all analytics, visitor data, captured leads, and payment attempts? This action is irreversible.')) {
                 return;
             }
 
-            localStorage.removeItem('admin_stats');
-            localStorage.removeItem('admin_leads');
-            localStorage.removeItem('admin_orders');
-            
-            // Clear all session keys
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.startsWith('admin_sess_')) {
-                    localStorage.removeItem(key);
-                    i--;
+            if (window.supabaseHelper) {
+                try {
+                    await supabaseHelper.clearAllData();
+                } catch (e) {
+                    console.error("Error clearing Supabase data:", e);
+                }
+            } else {
+                localStorage.removeItem('admin_stats');
+                localStorage.removeItem('admin_leads');
+                localStorage.removeItem('admin_orders');
+                
+                // Clear all session keys
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('admin_sess_')) {
+                        localStorage.removeItem(key);
+                        i--;
+                    }
                 }
             }
 
-            loadDashboardData();
+            await loadDashboardData();
             alert('Analytics data has been cleared.');
         }
 
         // Initial security gate check
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             if (sessionStorage.getItem('admin_logged_in') === 'true') {
                 document.getElementById('loginOverlay').style.display = 'none';
                 
                 // Route to the tab specified in URL Hash slug
                 const tabId = window.location.hash.substring(1) || 'dashboard';
-                switchTab(tabId, true);
+                await switchTab(tabId, true);
             } else {
                 document.getElementById('loginOverlay').style.display = 'flex';
             }

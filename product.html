@@ -624,6 +624,8 @@
 
     <!-- Load data -->
     <script src="products.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
     <script>
         // Get query parameters
         const urlParams = new URLSearchParams(window.location.search);
@@ -826,11 +828,44 @@
         window.addEventListener('DOMContentLoaded', () => {
             // Track visitor
             try {
-                const stats = JSON.parse(localStorage.getItem('admin_stats') || '{"home":0,"product":0,"address":0,"cart":0,"payment":0,"mobile":0,"desktop":0}');
-                stats.product++;
-                localStorage.setItem('admin_stats', JSON.stringify(stats));
+                if (window.supabaseHelper) {
+                    supabaseHelper.logPageView('product');
+                } else {
+                    const stats = JSON.parse(localStorage.getItem('admin_stats') || '{"home":0,"product":0,"address":0,"cart":0,"payment":0,"mobile":0,"desktop":0}');
+                    stats.product++;
+                    localStorage.setItem('admin_stats', JSON.stringify(stats));
+                }
             } catch (e) {
                 console.error("Tracking error", e);
+            }
+
+            // Realtime User Heartbeat
+            try {
+                function updateHeartbeat() {
+                    if (window.supabaseHelper) {
+                        supabaseHelper.updateSession('Product Detail');
+                    } else {
+                        let sessionId = sessionStorage.getItem('user_session_id');
+                        if (!sessionId) {
+                            sessionId = 'SESS_' + Math.random().toString(36).substring(2, 9) + Date.now();
+                            sessionStorage.setItem('user_session_id', sessionId);
+                        }
+                        const geo = JSON.parse(localStorage.getItem('user_geo') || '{"city":"Unknown","region":"Unknown"}');
+                        const sessionData = {
+                            id: sessionId,
+                            page: 'Product Detail',
+                            last_active: Date.now(),
+                            device: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+                            city: geo.city,
+                            region: geo.region
+                        };
+                        localStorage.setItem('admin_sess_' + sessionId, JSON.stringify(sessionData));
+                    }
+                }
+                setInterval(updateHeartbeat, 3000);
+                updateHeartbeat();
+            } catch(e) {
+                console.error("Heartbeat error", e);
             }
 
             // Render Similar Products
