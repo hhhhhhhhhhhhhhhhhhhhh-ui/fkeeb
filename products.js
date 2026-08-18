@@ -310,7 +310,7 @@ const productsData = {
     "filename": "product8008.html",
     "title": "vivo V50 5G (Rose Red, 128 GB) (8 GB RAM)",
     "description": "Refresh Rate: 60 Hz/90 Hz/120 Hz, Local Peak Brightness: 4500 nits, Color Gamut: P3 Wide Color Gamut Supported, Light Emitting Material: VM7",
-    "name": "vivo V50 5G (Rose Red, 128 GB) (8 GB RAM) ZEISS Portrait, 6000mAh, IP68/69 & FOS 15 (https://www.vivo.com/in/products/v50)",
+    "name": "vivo V50 5G (Rose Red, 128 GB) (8 GB RAM) ZEISS Portrait, 6000mAh, IP68/69 & FOS 15",
     "rating_val": "4.8 ★",
     "rating_count": "4,089 Ratings",
     "discount": "97% Off",
