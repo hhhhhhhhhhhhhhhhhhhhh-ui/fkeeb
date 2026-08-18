@@ -308,17 +308,17 @@ const productsData = {
     "8008": {
     "id": 8008,
     "filename": "product8008.html",
-    "title": "Sasimo 4-Door 4-Shelf Compact Plastic Foldable Cupboard | PC Collapsible Wardrobe | Dark Finish - Flipkart",
-    "description": "Buy Sasimo 4-Door 4-Shelf Compact Plastic Foldable Cupboard | PC Collapsible Wardrobe | Dark Finish at Flipkart. 97% Off!",
-    "name": "Sasimo 4-Door 4-Shelf Compact Plastic Foldable Cupboard | PC Collapsible Wardrobe | Dark Finish",
-    "rating_val": "4.2 ★",
+    "title": "vivo V50 5G (Rose Red, 128 GB) (8 GB RAM)",
+    "description": "Refresh Rate: 60 Hz/90 Hz/120 Hz, Local Peak Brightness: 4500 nits, Color Gamut: P3 Wide Color Gamut Supported, Light Emitting Material: VM7",
+    "name": "vivo V50 5G (Rose Red, 128 GB) (8 GB RAM)",
+    "rating_val": "4.8 ★",
     "rating_count": "4,089 Ratings",
     "discount": "97% Off",
-    "original_price": "₹6714",
-    "sale_price": "₹189",
-    "wow_price": "₹189",
+    "original_price": "₹32997",
+    "sale_price": "₹799",
+    "wow_price": "₹799",
     "images": [
-        "https://jo128.surigq.shop/cosmicAssets/furnitureImages/product-8008-1.jpg"
+        "https://rukminim2.flixcart.com/image/2560/2560/xif0q/mobile/v/z/r/-original-imahc6hdfzgzczzj.jpeg?q=90"
     ],
     "colors": []
 }
